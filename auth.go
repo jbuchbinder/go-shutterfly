@@ -13,7 +13,7 @@ func (self *Shutterfly) Authorize(username, password string) (string, error) {
 	payload := "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
 		"<entry xmlns=\"http://www.w3.org/2005/Atom\" xmlns:user=\"http://user.openfly.shutterfly.com/v1.0\">" +
 		"<category term=\"user\" scheme=\"http://openfly.shutterfly.com/v1.0\" />" +
-		"<user:password>" + password + "</user:password>" +
+		"<user:password>" + XmlEncode(password) + "</user:password>" +
 		"</entry>\n"
 	url := "https://ws.shutterfly.com/user/" + username + "/auth"
 
@@ -50,6 +50,7 @@ func (self *Shutterfly) Authorize(username, password string) (string, error) {
 	}
 
 	sm := rx.FindStringSubmatch(b)
+	self.AuthToken = sm[1]
 	return sm[1], nil
 }
 
