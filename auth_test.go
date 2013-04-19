@@ -18,7 +18,7 @@ func TestAuth(t *testing.T) {
 		return
 	}
 	t.Log("Got authToken = " + authToken)
-	uid, err := s.GetUserId(authToken)
+	uid, err := s.GetUserId()
 	if err != nil {
 		t.Error(err)
 		return

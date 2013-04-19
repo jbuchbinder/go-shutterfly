@@ -1,6 +1,7 @@
 package shutterfly
 
 import (
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -54,7 +55,10 @@ func (self *Shutterfly) Authorize(username, password string) (string, error) {
 	return sm[1], nil
 }
 
-func (self *Shutterfly) GetUserId(authtoken string) (string, error) {
+func (self *Shutterfly) GetUserId() (string, error) {
+	if self.AuthToken == "" {
+		return "", errors.New("No AuthToken, please login first.")
+	}
 	client := http.Client{}
 	req, err := http.NewRequest("GET", "https://ws.shutterfly.com/auth", nil)
 	if err != nil {
@@ -62,7 +66,7 @@ func (self *Shutterfly) GetUserId(authtoken string) (string, error) {
 		fmt.Println(err)
 		return "", err
 	}
-	req.Header.Set("X-OPENFLY-Authorization", "SFLY user-auth="+authtoken)
+	req.Header.Set("X-OPENFLY-Authorization", "SFLY user-auth="+self.AuthToken)
 	res, err := client.Do(req)
 	if err != nil {
 		fmt.Println("ERROR: ")
