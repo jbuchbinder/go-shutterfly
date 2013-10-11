@@ -46,7 +46,7 @@ func (self *Shutterfly) UploadPhotos(photos []string, folderName, albumName stri
 			return err
 		}
 		defer file.Close()
-		part, err := CreateJpegFormFile(writer /* "photo["+string(k)+"]" */, "Image.Data", filepath.Base(v))
+		part, err := createJpegFormFile(writer /* "photo["+string(k)+"]" */, "Image.Data", filepath.Base(v))
 		if err != nil {
 			return err
 		}
@@ -60,6 +60,9 @@ func (self *Shutterfly) UploadPhotos(photos []string, folderName, albumName stri
 		return err
 	}
 
+	// This was originally documented to use up3.shutterfly.com, but the
+	// testing mechanism indicated this URL, so it has been adjusted to
+	// use it.
 	req, err := http.NewRequest("POST", "https://up1.shutterfly.com/images", body)
 	if err != nil {
 		fmt.Println("ERROR: ")
@@ -67,10 +70,11 @@ func (self *Shutterfly) UploadPhotos(photos []string, folderName, albumName stri
 		return err
 	}
 
-	req.Header.Set("X-OPENFLY-Authorization", "SFLY user-auth="+self.AuthToken)
+	// Push MIME boundary type header from multipart.Writer
 	req.Header.Set("Content-type", writer.FormDataContentType())
-	self.TestLog("X-OPENFLY-Authorization: SFLY user-auth=" + self.AuthToken)
-	AuthHeaders(req, "")
+
+	// Populate with authorization request headers
+	authHeaders(req, self, "")
 
 	//dump, _ := httputil.DumpRequest(req, true)
 	//self.TestLog("Request: " + string(dump))
@@ -92,6 +96,7 @@ func (self *Shutterfly) UploadPhotos(photos []string, folderName, albumName stri
 	self.TestLog("Status: " + res.Status)
 	self.TestLog(string(rbody))
 
+	// Handle non-2xx/3xx series error codes by throwing an error
 	if res.StatusCode > 399 {
 		return errors.New("Response: " + res.Status)
 	}
@@ -101,6 +106,9 @@ func (self *Shutterfly) UploadPhotos(photos []string, folderName, albumName stri
 	if err != nil {
 		return err
 	}
+
+	// Currently, the logic is that *any* failure in a batch upload
+	// should indicate a failure.
 	if xmlresp.NumFail > 0 {
 		return errors.New(fmt.Sprintf("%d failed to upload", xmlresp.NumFail))
 	}
@@ -108,16 +116,19 @@ func (self *Shutterfly) UploadPhotos(photos []string, folderName, albumName stri
 	return nil
 }
 
-func CreateJpegFormFile(w *multipart.Writer, fieldname, filename string) (io.Writer, error) {
+// Cribbed functions to support overriding MIME stuff
+
+func createJpegFormFile(w *multipart.Writer, fieldname, filename string) (io.Writer, error) {
 	h := make(textproto.MIMEHeader)
 	h.Set("Content-Disposition",
 		fmt.Sprintf(`form-data; name="%s"; filename="%s"`,
 			escapeQuotes(fieldname), escapeQuotes(filename)))
+	// Major change from the stock function is to declare this with
+	// type == image/jpeg, otherwise Shutterfly's API will choke on
+	// the request:
 	h.Set("Content-Type", "image/jpeg")
 	return w.CreatePart(h)
 }
-
-// Cribbed functions to support overriding MIME stuff
 
 var quoteEscaper = strings.NewReplacer("\\", "\\\\", `"`, "\\\"")
 
