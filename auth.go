@@ -9,12 +9,14 @@ import (
 	"strings"
 )
 
+// Authorize connects to the Shutterfly service with the specified username
+// and password, and returns the resulting authorization token.
 func (self *Shutterfly) Authorize(username, password string) (string, error) {
 	client := http.Client{}
 	payload := "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
 		"<entry xmlns=\"http://www.w3.org/2005/Atom\" xmlns:user=\"http://user.openfly.shutterfly.com/v1.0\">" +
 		"<category term=\"user\" scheme=\"http://openfly.shutterfly.com/v1.0\" />" +
-		"<user:password>" + XmlEncode(password) + "</user:password>" +
+		"<user:password>" + xmlEncode(password) + "</user:password>" +
 		"</entry>\n"
 	url := "https://ws.shutterfly.com/user/" + username + "/auth"
 
@@ -55,9 +57,9 @@ func (self *Shutterfly) Authorize(username, password string) (string, error) {
 	return sm[1], nil
 }
 
-func (self *Shutterfly) GetUserId() (string, error) {
+func (self *Shutterfly) GetUserID() (string, error) {
 	if self.AuthToken == "" {
-		return "", errors.New("No AuthToken, please login first.")
+		return "", errors.New("no AuthToken, please login first")
 	}
 	client := http.Client{}
 	req, err := http.NewRequest("GET", "https://ws.shutterfly.com/auth", nil)

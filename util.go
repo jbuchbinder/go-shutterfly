@@ -7,14 +7,14 @@ import (
 	"time"
 )
 
-// Wrap xml.Escape() so that it can be simply used with strings
-func XmlEncode(s string) string {
+// xmlEncode wraps xml.Escape() so that it can be simply used with strings
+func xmlEncode(s string) string {
 	w := bytes.NewBuffer([]byte{})
 	xml.Escape(w, []byte(s))
 	return w.String()
 }
 
-// Add Shutterfly Open API authorization headers to an existing
+// authHeaders adds Shutterfly Open API authorization headers to an existing
 // http.Request object.
 func authHeaders(req *http.Request, sfly *Shutterfly, urlParams string) {
 	now := time.Now()

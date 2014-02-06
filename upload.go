@@ -16,7 +16,7 @@ import (
 	"strings"
 )
 
-type UploadResponse struct {
+type uploadResponse struct {
 	XMLName    xml.Name `xml:"feed"`
 	ErrCode    int      `xml:"upload:errCode"`
 	ErrMessage string   `xml:"upload:errMessage"`
@@ -25,9 +25,11 @@ type UploadResponse struct {
 	AlbumPath  string   `xml:"upload:albumPath"`
 }
 
+// UploadPhotos uploads photos to the Shutterfly service with the specified
+// folder and album names.
 func (self *Shutterfly) UploadPhotos(photos []string, folderName, albumName string) error {
 	if self.AuthToken == "" {
-		return errors.New("No AuthToken, please login first.")
+		return errors.New("no AuthToken, please login first")
 	}
 	client := http.Client{}
 
@@ -98,10 +100,10 @@ func (self *Shutterfly) UploadPhotos(photos []string, folderName, albumName stri
 
 	// Handle non-2xx/3xx series error codes by throwing an error
 	if res.StatusCode > 399 {
-		return errors.New("Response: " + res.Status)
+		return errors.New("response: " + res.Status)
 	}
 
-	var xmlresp UploadResponse
+	var xmlresp uploadResponse
 	err = xml.Unmarshal(rbody, &xmlresp)
 	if err != nil {
 		return err
@@ -110,7 +112,7 @@ func (self *Shutterfly) UploadPhotos(photos []string, folderName, albumName stri
 	// Currently, the logic is that *any* failure in a batch upload
 	// should indicate a failure.
 	if xmlresp.NumFail > 0 {
-		return errors.New(fmt.Sprintf("%d failed to upload", xmlresp.NumFail))
+		return fmt.Errorf("%d failed to upload", xmlresp.NumFail)
 	}
 
 	return nil

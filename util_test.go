@@ -8,7 +8,7 @@ import (
 func TestXmlEncode(t *testing.T) {
 	t.Log("Testing XML encoding")
 	orig := "This is & <> test"
-	out := XmlEncode(orig)
+	out := xmlEncode(orig)
 	if out == "" {
 		t.Error(errors.New("No string returned"))
 		return
