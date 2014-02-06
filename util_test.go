@@ -10,11 +10,11 @@ func TestXmlEncode(t *testing.T) {
 	orig := "This is & <> test"
 	out := xmlEncode(orig)
 	if out == "" {
-		t.Error(errors.New("No string returned"))
+		t.Error(errors.New("no string returned"))
 		return
 	}
 	t.Log("Returned : " + out)
 	if out != "This is &amp; &lt;&gt; test" {
-		t.Error(errors.New("Fail"))
+		t.Error(errors.New("fail"))
 	}
 }

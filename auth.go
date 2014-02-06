@@ -57,6 +57,8 @@ func (self *Shutterfly) Authorize(username, password string) (string, error) {
 	return sm[1], nil
 }
 
+// GetUserID retrieves the user id for the current authtoken for a logged
+// in user.
 func (self *Shutterfly) GetUserID() (string, error) {
 	if self.AuthToken == "" {
 		return "", errors.New("no AuthToken, please login first")
