@@ -6,9 +6,9 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"mime/multipart"
 	"net/http"
+
 	//"net/http/httputil"
 	"net/textproto"
 	"os"
@@ -76,7 +76,7 @@ func (self *Shutterfly) UploadPhotos(photos []string, folderName, albumName stri
 	req.Header.Set("Content-type", writer.FormDataContentType())
 
 	// Populate with authorization request headers
-	authHeaders(req, self, "")
+	authHeaders(req, self)
 
 	//dump, _ := httputil.DumpRequest(req, true)
 	//self.TestLog("Request: " + string(dump))
@@ -88,11 +88,11 @@ func (self *Shutterfly) UploadPhotos(photos []string, folderName, albumName stri
 		return err
 	}
 	defer res.Body.Close()
-	rbody, err := ioutil.ReadAll(res.Body)
+	rbody, err := io.ReadAll(res.Body)
 	if err != nil {
 		fmt.Println("IO: ")
 		fmt.Println(err)
-		fmt.Println(rbody)
+		fmt.Println(string(rbody))
 		return err
 	}
 	self.TestLog("Status: " + res.Status)

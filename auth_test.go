@@ -17,11 +17,11 @@ func TestAuth(t *testing.T) {
 		t.Error(err)
 		return
 	}
-	t.Log("Got authToken = " + authToken)
+	t.Logf("Got authToken %s", authToken)
 	uid, err := s.GetUserID()
 	if err != nil {
 		t.Error(err)
 		return
 	}
-	t.Log("Got uid = " + uid)
+	t.Logf("Got uid %s", uid)
 }

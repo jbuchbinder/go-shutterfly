@@ -3,7 +3,7 @@ package shutterfly
 import (
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"regexp"
 	"strings"
@@ -34,11 +34,11 @@ func (self *Shutterfly) Authorize(username, password string) (string, error) {
 		return "", err
 	}
 	defer res.Body.Close()
-	body, err := ioutil.ReadAll(res.Body)
+	body, err := io.ReadAll(res.Body)
 	if err != nil {
 		fmt.Println("IO: ")
 		fmt.Println(err)
-		fmt.Println(body)
+		fmt.Println(string(body))
 		return "", err
 	}
 
@@ -48,7 +48,7 @@ func (self *Shutterfly) Authorize(username, password string) (string, error) {
 	if err != nil {
 		fmt.Println("REGEX: ")
 		fmt.Println(err)
-		fmt.Println(body)
+		fmt.Println(string(body))
 		return "", err
 	}
 
@@ -78,11 +78,11 @@ func (self *Shutterfly) GetUserID() (string, error) {
 		return "", err
 	}
 	defer res.Body.Close()
-	body, err := ioutil.ReadAll(res.Body)
+	body, err := io.ReadAll(res.Body)
 	if err != nil {
 		fmt.Println("IO: ")
 		fmt.Println(err)
-		fmt.Println(body)
+		fmt.Println(string(body))
 		return "", err
 	}
 
@@ -92,7 +92,7 @@ func (self *Shutterfly) GetUserID() (string, error) {
 	if err != nil {
 		fmt.Println("REGEX: ")
 		fmt.Println(err)
-		fmt.Println(body)
+		fmt.Println(string(body))
 		return "", err
 	}
 

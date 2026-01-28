@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+
 	shutterfly "github.com/jbuchbinder/go-shutterfly"
 )
 

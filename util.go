@@ -16,7 +16,7 @@ func xmlEncode(s string) string {
 
 // authHeaders adds Shutterfly Open API authorization headers to an existing
 // http.Request object.
-func authHeaders(req *http.Request, sfly *Shutterfly, urlParams string) {
+func authHeaders(req *http.Request, sfly *Shutterfly) {
 	now := time.Now()
 
 	req.Header.Set("oflyAppId", APP_ID)
